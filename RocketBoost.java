@@ -2,9 +2,12 @@ import java.io.*;
 import java.awt.*;
 import javax.swing.*;
 import java.awt.event.*;
+
+import javax.imageio.ImageIO;
 import javax.sound.sampled.*;
 import java.util.Random;
 import java.awt.geom.AffineTransform;
+import java.awt.image.*;
 
 public class test extends JPanel implements ActionListener, KeyListener 
 {
@@ -158,14 +161,29 @@ public class test extends JPanel implements ActionListener, KeyListener
 
     public void drawPlayer(Graphics2D g)
     {
-        if(upPressed){
-            AffineTransform at = AffineTransform.getTranslateInstance(x, y);
-            at.rotate(-Math.toRadians(vectorAngle + 270));
-            g.drawImage(rocket_thrust, at, null);
-        }else if(!upPressed){
-            AffineTransform at = AffineTransform.getTranslateInstance(x, y);
-            at.rotate(-Math.toRadians(vectorAngle + 270));
-            g.drawImage(rocket_no_thrust, at, null);
+        try {
+            // Attempt to load the image
+            BufferedImage image = ImageIO.read(new File("resources/rocket-no-thrust.png"));
+            
+            int imageWidth = image.getWidth();
+            int imageHeight = image.getHeight();
+
+            if(upPressed){
+                AffineTransform at = AffineTransform.getTranslateInstance(x, y);
+                at.translate(imageWidth/2, imageHeight/2);
+                at.rotate(-Math.toRadians(vectorAngle + 270));
+                at.translate(-imageWidth/2, -imageHeight/2);
+                g.drawImage(rocket_thrust, at, null);
+            }else if(!upPressed){
+                AffineTransform at = AffineTransform.getTranslateInstance(x, y);
+                at.translate(imageWidth/2, imageHeight/2);
+                at.rotate(-Math.toRadians(vectorAngle + 270));
+                at.translate(-imageWidth/2, -imageHeight/2);
+                g.drawImage(rocket_no_thrust, at, null);
+            }
+        } catch (IOException e) {
+            // Handle the exception if the image can't be loaded
+            System.err.println("Error loading image: " + e.getMessage());
         }
     }
 
@@ -418,8 +436,8 @@ public class test extends JPanel implements ActionListener, KeyListener
          */
         float vertices [][] = {{0, 0}, {0, 0}, {0, 0}, {0, 0}};
 
-        float tempX;
-        float tempY;
+        float tempX = 0;
+        float tempY = 0;
 
         vertices[0][0] = x;  //Point 1
         vertices[0][1] = y;
@@ -435,22 +453,23 @@ public class test extends JPanel implements ActionListener, KeyListener
 
         //Loop through vertices
         for(int i = 0; i < vertices.length; i++){ 
-            vertices[i][0] -= x; //Subtract the point of rotation from the x and y of the vector
-            vertices[i][1] -= y;
+            vertices[i][0] -= x + (playerWidth/2); //Subtract the point of rotation from the x and y of the vector
+            vertices[i][1] -= y + (playerHeight/2);
 
             //Perform the rotations and add the point of rotation back onto the vertices
             //Xprime = x * cos(theta) - y * sin(theta)
             tempX = vertices[i][0]*(float)(Math.cos(Math.toRadians(-angle))) - vertices[i][1]* (float)(Math.sin(Math.toRadians(-angle)));
-            tempX += x;
+            tempX += x + (playerWidth/2);;
 
             //Yprime = x * sin(theta) + y * cos(theta)
             tempY = vertices[i][0]*(float)(Math.sin(Math.toRadians(-angle))) + vertices[i][1]*(float)(Math.cos(Math.toRadians(-angle)));
-            tempY += y;
+            tempY += y + (playerHeight/2);;
             
             //Subtract the point of rotation from the x and y of the vector
             vertices[i][0] = tempX;
             vertices[i][1] = tempY;
         }
+
         return vertices;
     }
 
