@@ -1,6 +1,6 @@
 # RocketBoost
 The initial idea behind this project was to showcase various vector operations and collision detection algorithms. 
-This was accomplished through the implementation of vector projection, rotation, and the Separating Axis algorithm (demo shown below).
+This was accomplished through the implementation of vector projection, rotation, and the Separating Axis algorithm (shown below).
 
 
 ![ezgif com-video-to-gif-converter](https://github.com/user-attachments/assets/007b955a-ed64-4648-b439-a4c9b10d77e5)
